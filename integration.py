@@ -14,19 +14,6 @@ import matplotlib.pyplot as plt
 gen_model = Generator()
 disc_model = Discriminator((256, 256, 3))
 
-binary_crossentropy_loss = losses.BinaryCrossentropy()
-z_dim = 64
-batch_size = 128
-display_step = 100
-lr = .001
-num_epochs = 2
-dataset = load_data()
-current_batch, next_batch = dataset.next()
-disc_optimizer = Adam()
-gen_optimizer = Adam()
-seed = 0
-noise_vector_dim = 64
-
 
 def generate_noise(batch_size, z_dim, seed=0):
     random_generator = tf.random.Generator.from_seed(seed)
@@ -58,10 +45,24 @@ def get_gen_loss(gen, disc, criterion, batch_size, z_dim):
     return gen_loss
 
 
+binary_crossentropy_loss = losses.BinaryCrossentropy()
+z_dim = 64
+batch_size = 128
+display_step = 100
+lr = .001
+num_epochs = 2
+dataset = load_data()
+
+disc_optimizer = Adam()
+gen_optimizer = Adam()
+seed = 0
+noise_vector_dim = 64
+
+current_batch, next_batch = dataset.next()
 sleep(.1)
 for epoch in range(num_epochs):
     print(rf"Epoch {epoch + 1}\{num_epochs}")
-    for i in tqdm(dataset):
+    for i in trange(len(dataset)):
         with tf.GradientTape() as disc_tape:
             discriminator_loss = get_disc_loss(gen=gen_model,
                                                disc=disc_model,
